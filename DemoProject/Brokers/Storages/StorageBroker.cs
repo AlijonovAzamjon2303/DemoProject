@@ -12,9 +12,12 @@ namespace DemoProject.Brokers.Storages
             throw new NotImplementedException();
         }
 
-        public ValueTask<VideoMetadata> InsertVideoMetadataAsync(VideoMetadata videoMetadata)
+        public async ValueTask<VideoMetadata> InsertVideoMetadataAsync(VideoMetadata videoMetadata)
         {
-            throw new NotImplementedException();
+            await this.VideoMetadatas.AddAsync(videoMetadata);
+            await this.SaveChangesAsync();
+
+            return videoMetadata;
         }
 
         public IQueryable<VideoMetadata> SelectAllVideoMetadatas()
