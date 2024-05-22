@@ -1,20 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DemoProject.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoProject.Brokers.Storages
 {
     internal partial class StorageBroker
     {
-        private readonly IConfiguration configuration;
-        public StorageBroker(IConfiguration configuration)
-        {
-            this.configuration = configuration;  
-            this.Database.Migrate();
-        }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            string connectionString = this.configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            optionsBuilder.UseSqlServer(connectionString);
-        }
+        public DbSet<VideoMetadata> VideoMetadatas { get; set; }
+        public async ValueTask<VideoMetadata> InsertVideoMetadataAsync(VideoMetadata videoMetadata) =>
+           await InsertAsync(videoMetadata);
+        public IQueryable<VideoMetadata> SelectAllVideoMetadatas() =>
+           SelectAll<VideoMetadata>();
+        public async ValueTask<VideoMetadata> SelectVideoMetadataByIdAsync(Guid videoMetadataId) =>
+       await SelectAsync<VideoMetadata>(videoMetadataId);
+        public async ValueTask<VideoMetadata> UpdateVideoMetadataAsync(VideoMetadata videoMetadata) =>
+            await UpdateAsync(videoMetadata);
+        public async ValueTask<VideoMetadata> DeleteVideoMetadataAsync(VideoMetadata videoMetadata) =>
+             await DeleteAsync(videoMetadata);
     }
 }

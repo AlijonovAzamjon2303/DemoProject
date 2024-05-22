@@ -6,33 +6,42 @@ namespace DemoProject.Brokers.Storages
 {
     internal partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
-        public DbSet<VideoMetadata> VideoMetadatas { get; set; }
-        public ValueTask<VideoMetadata> DeleteVideoMetadataAsync(VideoMetadata videoMetadata)
+        private readonly IConfiguration configuration;
+        public StorageBroker(IConfiguration configuration)
         {
-            throw new NotImplementedException();
+            this.configuration = configuration;
+            this.Database.Migrate();
         }
-
-        public async ValueTask<VideoMetadata> InsertVideoMetadataAsync(VideoMetadata videoMetadata)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            await this.VideoMetadatas.AddAsync(videoMetadata);
+            string connectionString = this.configuration.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+        private async ValueTask<T> InsertAsync<T>(T @object) where T : class
+        {
+            this.Entry<T>(@object).State = EntityState.Added;
             await this.SaveChangesAsync();
 
-            return videoMetadata;
+            return @object;
         }
-
-        public IQueryable<VideoMetadata> SelectAllVideoMetadatas()
+        private  IQueryable<T> SelectAll<T>() where T : class
+        => this.Set<T>();
+        private async ValueTask<T> SelectAsync<T>(params object[] objectsIds) where T : class
+        => await this.FindAsync<T>(objectsIds);
+        private async ValueTask<T> UpdateAsync<T>(T @object) where T : class
         {
-            throw new NotImplementedException();
+            this.Entry(@object).State = EntityState.Modified;
+            await this.SaveChangesAsync();
+
+            return @object;
         }
-
-        public ValueTask<VideoMetadata> SelectVideoMetadataByIdAsync(Guid videoMetadataId)
+        private async ValueTask<T> DeleteAsync<T>(T @object) where T : class
         {
-            throw new NotImplementedException();
-        }
+            this.Entry(@object).State = EntityState.Deleted;
+            await this.SaveChangesAsync();
 
-        public ValueTask<VideoMetadata> UpdateVideoMetadataAsync(VideoMetadata videoMetadata)
-        {
-            throw new NotImplementedException();
+            return @object;
         }
     }
 }

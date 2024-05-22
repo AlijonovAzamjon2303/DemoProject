@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DemoProject.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20240515101419_SecondMigration")]
-    partial class SecondMigration
+    [Migration("20240522110636_fst")]
+    partial class fst
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
